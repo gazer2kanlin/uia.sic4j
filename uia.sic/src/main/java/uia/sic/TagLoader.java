@@ -3,6 +3,7 @@ package uia.sic;
 import java.util.List;
 
 /**
+ * Tag loader.
  * 
  * @author Kyle
  * 
@@ -10,8 +11,9 @@ import java.util.List;
 public interface TagLoader {
 
     /**
+     * Tags loaed into node space.
      * 
-     * @return
+     * @return Tag list.
      */
     public List<WritableTag> load();
 }

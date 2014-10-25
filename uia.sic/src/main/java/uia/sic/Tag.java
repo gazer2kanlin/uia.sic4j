@@ -12,41 +12,51 @@ import java.util.Date;
 public interface Tag extends Serializable {
 
     /**
+     * Get id. Id is path + "$" + name.
+     * 
+     * @return The id.
+     */
+    public String getId();
+
+    /**
      * Get the path.
      * 
-     * @return
+     * @return The path.
      */
     public String getPath();
 
     /**
      * Get tag name.
      * 
-     * @return
+     * @return The name.
      */
     public String getName();
 
     /**
+     * Get the unit.
      * 
-     * @return
+     * @return The unit.
      */
     public String getUnit();
 
     /**
+     * Get update time.
      * 
-     * @return
+     * @return Update time.
      */
     public Date getUpdateTime();
 
     /**
      * Get tag value.
      * 
-     * @return
+     * @return The value.
      */
     public Object getValue();
 
     /**
+     * Get reference data.
      * 
-     * @return
+     * @return Data object.
      */
     public Object getSource();
 

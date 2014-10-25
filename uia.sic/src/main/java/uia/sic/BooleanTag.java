@@ -1,8 +1,7 @@
 package uia.sic;
 
-
 /**
- * Tag.
+ * Boolean tag.
  * 
  * @author Kyle
  * 
@@ -12,7 +11,7 @@ public class BooleanTag extends WritableTag {
     private static final long serialVersionUID = 6641394234025366154L;
 
     /**
-     * Create a writable tag..
+     * Create a tag.
      * 
      * @param path The path.
      * @param name The tag name.

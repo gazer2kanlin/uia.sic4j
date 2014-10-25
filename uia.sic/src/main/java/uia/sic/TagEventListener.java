@@ -1,6 +1,7 @@
 package uia.sic;
 
 /**
+ * Tag event listener.
  * 
  * @author Kyle
  * 
@@ -8,6 +9,7 @@ package uia.sic;
 public interface TagEventListener {
 
     /**
+     * Invoke when value of tag is changed.
      * 
      * @param tag
      */

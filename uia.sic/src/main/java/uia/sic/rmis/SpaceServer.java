@@ -1,7 +1,10 @@
 package uia.sic.rmis;
 
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.util.List;
 
 import uia.sic.Tag;
@@ -18,11 +21,11 @@ public interface SpaceServer extends Remote {
      * 
      * @param clientName The client name.
      * @param hostName The host runs SpaceClient RMI service.
-     * @param lookupName The SpaceClient RMI binding name.
+     * @param rmiLookupName The SpaceClient RMI binding name.
      * @return Success or not.
      * @throws RemoteException
      */
-    public boolean register(String clientName, String hostName, String lookupName) throws RemoteException;
+    public boolean register(String clientName, String hostName, String rmiLookupName) throws RemoteException;
 
     /**
      * Unregister a client service.
@@ -39,7 +42,6 @@ public interface SpaceServer extends Remote {
      * @param clientName Client name.
      * @param fullPath The full path.
      * @param name Tag name.
-     * @param value Value.
      * @return 0: no tag. 1: success. -1: no this client service.
      * @throws RemoteException
      */
@@ -50,10 +52,10 @@ public interface SpaceServer extends Remote {
      * 
      * @param clientName
      * @param prePath The pre-path.
-     * @return
+     * @return success or not.
      * @throws RemoteException
      */
-    public boolean listenTags(String clientName, String prePath) throws RemoteException;
+    public int listenTags(String clientName, String prePath) throws RemoteException;
 
     /**
      * Listen tags in space.
@@ -61,10 +63,10 @@ public interface SpaceServer extends Remote {
      * @param clientName Client name.
      * @param prePath The pre-path.
      * @param name Tag name.
-     * @return
+     * @return success or not.
      * @throws RemoteException
      */
-    public boolean listenTags(String clientName, String prePath, String name) throws RemoteException;
+    public int listenTags(String clientName, String prePath, String name) throws RemoteException;
 
     /**
      * Browse one tag in node space.
@@ -113,4 +115,20 @@ public interface SpaceServer extends Remote {
      * @throws RemoteException
      */
     public int writeTag(String fullPath, String name, Object value) throws RemoteException;
+
+    /**
+     * 
+     * @author Kyle
+     * 
+     */
+    public final static class Stub {
+
+        private Stub() {
+        }
+
+        public static SpaceServer lookup(String hostName) throws AccessException, RemoteException, NotBoundException {
+            return (SpaceServer) LocateRegistry.getRegistry(hostName).lookup("SpaceServer");
+        }
+    }
+
 }

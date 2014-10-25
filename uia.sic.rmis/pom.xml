@@ -43,6 +43,7 @@
 			<id>uia-snapshot</id>
 			<name>uia-snapshot</name>
 			<url>http://192.168.0.100:8080/nexus/content/repositories/uia-snapshot</url>
+			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
 	<build>

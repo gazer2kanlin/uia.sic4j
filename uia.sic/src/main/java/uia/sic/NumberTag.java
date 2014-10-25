@@ -1,7 +1,7 @@
 package uia.sic;
 
 /**
- * Tag.
+ * Number tag.
  * 
  * @author Kyle
  * 
@@ -11,7 +11,7 @@ public class NumberTag extends WritableTag {
     private static final long serialVersionUID = 5156638506689522891L;
 
     /**
-     * Create a writable tag..
+     * Create a tag.
      * 
      * @param path The path.
      * @param name The tag name.

@@ -47,6 +47,16 @@ public class NodeSpace {
     }
 
     /**
+     * Browse tags with full path.
+     * 
+     * @param fullPath The full path.
+     * @return Null if not found.
+     */
+    public List<WritableTag> single(String fullPath) {
+        return this.pathTags.get(WritableTag.toPath(fullPath));
+    }
+
+    /**
      * Browse a tag with full path and name.
      * 
      * @param fullPath The full path.
@@ -55,6 +65,10 @@ public class NodeSpace {
      */
     public WritableTag single(String fullPath, String name) {
         ArrayList<WritableTag> tags = this.pathTags.get(WritableTag.toPath(fullPath));
+        if (tags == null) {
+            return null;
+        }
+
         for (WritableTag tag : tags) {
             if (tag.getName().equals(name)) {
                 return tag;

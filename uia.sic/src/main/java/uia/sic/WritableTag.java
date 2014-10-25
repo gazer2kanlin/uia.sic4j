@@ -7,7 +7,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Tag.
+ * Writable tag.
  * 
  * @author Kyle
  * 
@@ -22,9 +22,13 @@ public class WritableTag implements Tag {
         TH_POOL_EXEC = new ThreadPoolExecutor(20, 40, 2, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(40));
     }
 
+    private final ArrayList<TagEventListener> listeners;
+
     private final String path;
 
     private final String name;
+
+    private final String id;
 
     private final String unit;
 
@@ -36,8 +40,6 @@ public class WritableTag implements Tag {
 
     private Object source;
 
-    private final ArrayList<TagEventListener> listeners;
-
     /**
      * Create a tag..
      * 
@@ -46,7 +48,7 @@ public class WritableTag implements Tag {
      * @param unit The unit of value.
      */
     public WritableTag(String path, String name, String unit) {
-        this(path, name, unit, null, false);
+        this(path, name, unit, null, false, null);
     }
 
     /**
@@ -59,13 +61,29 @@ public class WritableTag implements Tag {
      * @param readonly Read only or not.
      */
     public WritableTag(String path, String name, String unit, Object value, boolean readonly) {
+        this(path, name, unit, value, readonly, null);
+    }
+
+    /**
+     * Create a writable tag..
+     * 
+     * @param path The path.
+     * @param name The tag name.
+     * @param unit The unit of value.
+     * @param value The value.
+     * @param readonly Read only or not.
+     * @param sourec Data object.
+     */
+    public WritableTag(String path, String name, String unit, Object value, boolean readonly, Object source) {
         this.listeners = new ArrayList<TagEventListener>();
         this.path = toPath(path);
         this.name = name;
+        this.id = this.path + "$" + name;
         this.unit = unit;
         this.updateTime = new Date();
         this.value = value;
         this.readonly = readonly;
+        this.source = source;
     }
 
     /**
@@ -97,10 +115,15 @@ public class WritableTag implements Tag {
         return this.listeners.size();
     }
 
+    @Override
+    public String getId() {
+        return this.id;
+    }
+
     /**
      * Get the path.
      * 
-     * @return
+     * @return The path
      */
     @Override
     public String getPath() {
@@ -110,7 +133,7 @@ public class WritableTag implements Tag {
     /**
      * Get tag name.
      * 
-     * @return
+     * @return The name
      */
     @Override
     public String getName() {
@@ -130,7 +153,7 @@ public class WritableTag implements Tag {
     /**
      * Get tag value.
      * 
-     * @return
+     * @return The value.
      */
     @Override
     public Object getValue() {
@@ -140,7 +163,7 @@ public class WritableTag implements Tag {
     /**
      * Setup tag value.
      * 
-     * @param value
+     * @param value The value.
      */
     public void setValue(Object value) {
         if (this.readonly) {
@@ -149,6 +172,12 @@ public class WritableTag implements Tag {
         writeValue(value);
     }
 
+    /**
+     * Compare value.
+     * 
+     * @param value Value compare with.
+     * @return Equal or not.
+     */
     public boolean valueEquals(Object value) {
         if (value != null && value.equals(this.value)) {
             return true;
@@ -159,8 +188,9 @@ public class WritableTag implements Tag {
     }
 
     /**
+     * Get reference data.
      * 
-     * @return
+     * @return Data object.
      */
     @Override
     public Object getSource() {
@@ -200,11 +230,10 @@ public class WritableTag implements Tag {
 
     @Override
     public String toString() {
-        return getPath() + "$" + getName() + "=" + getValue();
+        return this.id + "=" + getValue();
     }
 
     void raiseValueChanged() {
-        System.out.println(this + ", listener count:" + this.listeners.size());
         for (final TagEventListener listener : this.listeners) {
             TH_POOL_EXEC.execute(new Runnable() {
 
@@ -218,7 +247,7 @@ public class WritableTag implements Tag {
     }
 
     protected void throwClassCastEx(String typeName) {
-        throw new ClassCastException(getPath() + "$" + getName() + " must be " + typeName);
+        throw new ClassCastException(this.id + " must be " + typeName);
     }
 
     static String toPath(String path) {
@@ -235,5 +264,35 @@ public class WritableTag implements Tag {
             }
         }
         return result;
+    }
+
+    /**
+     * Find path and name.
+     * 
+     * @param pathName The path and name. Well format is {path}${name}. Path format is //{1}/{2}/.../.
+     * @return Name is returned. If format is not correct, -1 is returned.
+     */
+    static String[] findPathAndName(String id) {
+        int idx = id.lastIndexOf("//$");
+        if (idx < 0) {
+            return null;
+        } else {
+            return new String[] {
+                    id.substring(0, idx + 1),
+                    id.substring(idx + 2)
+            };
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o != null &&
+                o instanceof WritableTag &&
+                ((WritableTag) o).id.equals(this.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();
     }
 }

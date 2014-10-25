@@ -1,8 +1,7 @@
 package uia.sic;
 
-
 /**
- * Tag.
+ * Byte array tag.
  * 
  * @author Kyle
  * 
@@ -12,7 +11,7 @@ public class ByteArrayTag extends WritableTag {
     private static final long serialVersionUID = -6922151413173590816L;
 
     /**
-     * Create a writable tag..
+     * Create a tag.
      * 
      * @param path The path.
      * @param name The tag name.
