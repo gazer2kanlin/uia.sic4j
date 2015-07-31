@@ -1,8 +1,4 @@
-uia.sic/.settings
-uia.sic/.project
-uia.sic/.classpath
-uia.sic/target
-uia.sic.rmis/.settings
-uia.sic.rmis/.project
-uia.sic.rmis/.classpath
-uia.sic.rmis/target
+/bin
+/log
+
+

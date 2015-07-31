@@ -9,7 +9,7 @@ import org.junit.Test;
 import uia.sic.NodeSpace;
 import uia.sic.Tag;
 import uia.sic.rmis.SpaceServer;
-import uia.sic.rmis.impl.SpaceServerSkeleton;
+import uia.sic.rmis.SpaceServerStub;
 
 public class SpaceClientTest {
 
@@ -25,7 +25,8 @@ public class SpaceClientTest {
             System.setProperty(
                     "java.rmi.server.codebase",
                     "file://" + System.getProperty("user.dir") + "/target/classes/");
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
         }
     }
 
@@ -43,15 +44,17 @@ public class SpaceClientTest {
         new SpaceServerSkeleton(new NodeSpace(new SampleTagLoader())).start();
 
         // start client
-        new SpaceClientSkeleton().start();
+        SpaceClientSkeleton client = new SpaceClientSkeleton();
+        client.start();
 
         // get server stub
-        SpaceServer server = SpaceServer.Stub.lookup("localhost");
+        SpaceServer server = new SpaceServerStub("localhost");
         System.out.println("server> " + server);
 
         // register client to server
-        System.out.println("register:" + server.register("ABC", "localhost", "SpaceClient"));
-        System.out.println("register:" + server.register("ABCd", "localhost", "SpaceClient1"));
+        System.out.println("register:" + server.register("ABC", client));
+        // System.out.println("register:" + server.register("ABC", "localhost", "SpaceClient"));
+        //System.out.println("register:" + server.register("ABCd", "localhost", "SpaceClient1"));
 
         // listen tags
         System.out.println("listen:" + server.listenTags("ABC", "//s200/", "online"));
@@ -78,7 +81,7 @@ public class SpaceClientTest {
         System.out.println("unregister:" + server.unregister("ABC"));
 
         // change value
-        System.out.println("write5:" + server.writeTag("//s200/PID/M4/0001/", "online", true));
+        //System.out.println("write5:" + server.writeTag("//s200/PID/M4/0001/", "online", true));
         Thread.sleep(1000);
 
     }

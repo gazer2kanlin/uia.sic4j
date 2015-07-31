@@ -2,19 +2,41 @@ package uia.sic.rmis.impl;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import uia.sic.TagEventListener;
 import uia.sic.WritableTag;
 import uia.sic.rmis.SpaceClient;
 
-public class ClientTagEventListener implements TagEventListener {
+class ClientTagEventListener implements TagEventListener {
+
+    private static Logger logger = Logger.getLogger(ClientTagEventListener.class);
+
+    private final SpaceServerSkeleton server;
+
+    private final String name;
 
     private final SpaceClient client;
 
     private final ArrayList<WritableTag> tags;
 
-    public ClientTagEventListener(SpaceClient client) {
+    public ClientTagEventListener(SpaceServerSkeleton server, String name, SpaceClient client) {
+        this.server = server;
+        this.name = name;
         this.client = client;
         this.tags = new ArrayList<WritableTag>();
+    }
+
+    public boolean alive() {
+        try {
+            this.client.alive();
+            logger.debug(String.format("sic> %s> alive", this.name));
+            return true;
+        }
+        catch (Exception ex) {
+            logger.error(String.format("sic> %s> not alive", this.name));
+            return true;
+        }
     }
 
     public void addTag(WritableTag tag) {
@@ -34,18 +56,36 @@ public class ClientTagEventListener implements TagEventListener {
     }
 
     @Override
-    public void valueChanged(WritableTag tag) {
+    public void valueChanged(final WritableTag tag) {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    ReadonlyTag roTag = new ReadonlyTag(tag.getPath(), tag.getName());
+                    roTag.setUnit(tag.getUnit());
+                    roTag.setValue(tag.getValue());
+                    roTag.setSource(tag.getSource());
+                    roTag.setUpdateTime(tag.getUpdateTime());
+                    roTag.setReadonly(tag.isReadonly());
+                    ClientTagEventListener.this.client.valueChanged(roTag);
+                }
+                catch (Exception ex) {
+                    logger.error(String.format("sic> %s> notify failure. maybe disconnect or broken.", ClientTagEventListener.this.name));
+                    unregisteredSelf();
+                }
+            }
+
+        }).start();
+    }
+
+    private void unregisteredSelf() {
         try {
-            ReadonlyTag roTag = new ReadonlyTag(tag.getPath(), tag.getName());
-            roTag.setUnit(tag.getUnit());
-            roTag.setValue(tag.getValue());
-            roTag.setSource(tag.getSource());
-            roTag.setUpdateTime(tag.getUpdateTime());
-            roTag.setReadonly(tag.isReadonly());
-            this.client.valueChanged(roTag);
-        } catch (Exception ex) {
+            logger.info(String.format("sic> %s unregister self", this.name));
+            this.server.unregister(this.name);
+        }
+        catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-
 }

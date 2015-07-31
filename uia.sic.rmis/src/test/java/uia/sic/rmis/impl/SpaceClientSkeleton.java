@@ -28,6 +28,10 @@ public class SpaceClientSkeleton extends UnicastRemoteObject implements SpaceCli
     @Override
     public void valueChanged(Tag tag) throws RemoteException {
         System.out.println(tag);
-
+    }
+    
+    @Override
+    public void alive()  throws RemoteException {
+        System.out.println("alive");
     }
 }

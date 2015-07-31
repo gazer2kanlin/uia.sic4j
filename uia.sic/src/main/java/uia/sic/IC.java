@@ -21,7 +21,7 @@ public abstract class IC {
     /**
      * Bind tags of space into this IC.
      * 
-     * @param space
+     * @param space Node space.
      */
     public abstract void bind(NodeSpace space);
 

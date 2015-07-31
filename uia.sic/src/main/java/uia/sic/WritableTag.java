@@ -41,7 +41,7 @@ public class WritableTag implements Tag {
     private Object source;
 
     /**
-     * Create a tag..
+     * Constructor.
      * 
      * @param path The path.
      * @param name The tag name.
@@ -52,7 +52,7 @@ public class WritableTag implements Tag {
     }
 
     /**
-     * Create a writable tag..
+     * Constructor.
      * 
      * @param path The path.
      * @param name The tag name.
@@ -65,14 +65,14 @@ public class WritableTag implements Tag {
     }
 
     /**
-     * Create a writable tag..
+     * Constructor.
      * 
      * @param path The path.
      * @param name The tag name.
      * @param unit The unit of value.
      * @param value The value.
      * @param readonly Read only or not.
-     * @param sourec Data object.
+     * @param source Data object.
      */
     public WritableTag(String path, String name, String unit, Object value, boolean readonly, Object source) {
         this.listeners = new ArrayList<TagEventListener>();
@@ -105,71 +105,18 @@ public class WritableTag implements Tag {
     }
 
     /**
-     * clear event listeners.
+     * Clear event listeners.
      */
     public void clearEventListeners() {
         this.listeners.clear();
     }
 
+    /**
+     * Get count of listeners.
+     * @return Count.
+     */
     public int getEventListenerCount() {
         return this.listeners.size();
-    }
-
-    @Override
-    public String getId() {
-        return this.id;
-    }
-
-    /**
-     * Get the path.
-     * 
-     * @return The path
-     */
-    @Override
-    public String getPath() {
-        return this.path;
-    }
-
-    /**
-     * Get tag name.
-     * 
-     * @return The name
-     */
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public String getUnit() {
-        return this.unit;
-    }
-
-    @Override
-    public Date getUpdateTime() {
-        return this.updateTime;
-    }
-
-    /**
-     * Get tag value.
-     * 
-     * @return The value.
-     */
-    @Override
-    public Object getValue() {
-        return this.value;
-    }
-
-    /**
-     * Setup tag value.
-     * 
-     * @param value The value.
-     */
-    public void setValue(Object value) {
-        if (this.readonly) {
-            throw new IllegalArgumentException(toString() + " is readonly.");
-        }
-        writeValue(value);
     }
 
     /**
@@ -187,32 +134,83 @@ public class WritableTag implements Tag {
         return false;
     }
 
+    @Override
+    public String getId() {
+        return this.id;
+    }
+
+    @Override
+    public String getPath() {
+        return this.path;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String getUnit() {
+        return this.unit;
+    }
+
+    @Override
+    public Date getUpdateTime() {
+        return this.updateTime;
+    }
+
+    @Override
+    public Object getValue() {
+        return this.value;
+    }
+
     /**
-     * Get reference data.
+     * Setup tag value.
      * 
-     * @return Data object.
+     * @param value The value.
      */
+    public void setValue(Object value) {
+        if (this.readonly) {
+            throw new IllegalArgumentException(toString() + " is readonly.");
+        }
+        writeValue(value);
+    }
+
     @Override
     public Object getSource() {
         return this.source;
     }
 
     /**
+     * Set source object. 
      * 
-     * @param source
+     * @param source source.
      */
     public void setSource(Object source) {
         this.source = source;
     }
 
-    /**
-     * Value of tag is read only or not.
-     * 
-     * @return Read only.
-     */
     @Override
     public boolean isReadonly() {
         return this.readonly;
+    }
+
+    @Override
+    public String toString() {
+        return this.id + "=" + getValue();
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        return o != null &&
+                o instanceof WritableTag &&
+                ((WritableTag) o).id.equals(this.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();
     }
 
     /**
@@ -228,11 +226,9 @@ public class WritableTag implements Tag {
         }
     }
 
-    @Override
-    public String toString() {
-        return this.id + "=" + getValue();
-    }
-
+    /**
+     * Raise when value is changed.
+     */
     void raiseValueChanged() {
         for (final TagEventListener listener : this.listeners) {
             TH_POOL_EXEC.execute(new Runnable() {
@@ -246,10 +242,19 @@ public class WritableTag implements Tag {
         }
     }
 
+    /**
+     * Throw class casting exception.
+     * @param typeName Class name.
+     */
     protected void throwClassCastEx(String typeName) {
         throw new ClassCastException(this.id + " must be " + typeName);
     }
 
+    /**
+     * 
+     * @param path
+     * @return
+     */
     static String toPath(String path) {
         String result = path;
         if (!path.endsWith("/")) {
@@ -282,17 +287,5 @@ public class WritableTag implements Tag {
                     id.substring(idx + 2)
             };
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o != null &&
-                o instanceof WritableTag &&
-                ((WritableTag) o).id.equals(this.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.id.hashCode();
     }
 }

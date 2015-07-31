@@ -20,4 +20,10 @@ public interface SpaceClient extends Remote {
      * @throws RemoteException RMI remote exception.
      */
     public void valueChanged(Tag tag) throws RemoteException;
+    
+    /**
+     * Health check.
+     * @throws RemoteException RMI remote exception.
+     */
+    public void alive() throws RemoteException;
 }

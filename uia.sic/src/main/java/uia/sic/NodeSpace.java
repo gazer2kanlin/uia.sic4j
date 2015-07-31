@@ -12,7 +12,7 @@ import java.util.TreeMap;
  */
 public class NodeSpace {
 
-    private final TagGroup group;
+    private final TagGroup rootGroup;
 
     private final TreeMap<String, ArrayList<WritableTag>> pathTags;
 
@@ -24,7 +24,7 @@ public class NodeSpace {
      * @param loader The tag loader.
      */
     public NodeSpace(TagLoader loader) {
-        this.group = new TagGroup("");
+        this.rootGroup = new TagGroup("");
         this.pathTags = new TreeMap<String, ArrayList<WritableTag>>();
 
         List<WritableTag> tags = loader.load();
@@ -36,7 +36,7 @@ public class NodeSpace {
             }
             pool.add(tag);
             String[] branches = pathToTokens(tag.getPath());
-            build(this.group, branches, 0, tag);
+            build(this.rootGroup, branches, 0, tag);
         }
 
         this.tags = new ArrayList<WritableTag>();
@@ -44,6 +44,27 @@ public class NodeSpace {
         for (ArrayList<WritableTag> ts : tagsList) {
             this.tags.addAll(ts);
         }
+    }
+    
+    public void addTag(String path, String name, String value) {
+    	WritableTag tag = new StringTag(path, name, value, false);
+    	setup(tag);
+    }
+
+    public void addTag(String path, String name, boolean value) {
+    	WritableTag tag = new BooleanTag(path, name, value, false);
+    	setup(tag);
+    }
+
+    public void addTag(String path, String name, Number value) {
+    	WritableTag tag = new NumberTag(path, name, value, false);
+    	setup(tag);
+    }
+
+
+    public void addTag(String path, String name, byte[] value) {
+    	WritableTag tag = new ByteArrayTag(path, name, value, false);
+    	setup(tag);
     }
 
     /**
@@ -94,7 +115,7 @@ public class NodeSpace {
      */
     public List<WritableTag> browse(String prePath) {
         String[] branches = pathToTokens(WritableTag.toPath(prePath));
-        return toTags(browse(this.group, branches, 0));
+        return toTags(browse(this.rootGroup, branches, 0));
     }
 
     /**
@@ -106,7 +127,7 @@ public class NodeSpace {
      */
     public List<WritableTag> browse(String prePath, String name) {
         String[] branches = pathToTokens(WritableTag.toPath(prePath));
-        return toTags(browse(this.group, branches, 0), name);
+        return toTags(browse(this.rootGroup, branches, 0), name);
     }
 
     private TagGroup browse(TagGroup group, String[] branches, int index) {
@@ -150,6 +171,18 @@ public class NodeSpace {
             result.addAll(toTags(subGroup, name));
         }
         return result;
+    }
+    
+    private void setup(WritableTag tag) {
+        ArrayList<WritableTag> pool = this.pathTags.get(tag.getPath());
+        if (pool == null) {
+            pool = new ArrayList<WritableTag>();
+            this.pathTags.put(tag.getPath(), pool);
+        }
+        pool.add(tag);
+        String[] branches = pathToTokens(tag.getPath());
+        build(this.rootGroup, branches, 0, tag);
+        this.tags.add(tag);
     }
 
     private void build(TagGroup group, String[] branches, int index, WritableTag tag) {
