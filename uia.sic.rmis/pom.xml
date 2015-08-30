@@ -6,20 +6,10 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>uia.sic.rmis</name>
-	<url>http://maven.apache.org</url>
+	<url>http://github.com/gazer2kanlin/uia.sic4j</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	<repositories>
-		<repository>
-			<id>uia</id>
-			<url>http://192.168.1.100:8080/nexus/content/repositories/uia</url>
-		</repository>
-		<repository>
-			<id>uia-snapshot</id>
-			<url>http://192.168.1.100:8080/nexus/content/repositories/uia-snapshot</url>
-		</repository>
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -56,8 +46,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.5.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -65,7 +55,6 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.4</version>
 			</plugin>
-			<!-- 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -78,7 +67,10 @@
 					</execution>
 				</executions>
 			</plugin>
-			 -->
 		</plugins>
 	</build>
+	<scm>
+		<url>http://github.com/gazer2kanlin/uia.sic4j</url>
+		<connection>Kyle K. Lin</connection>
+	</scm>
 </project>

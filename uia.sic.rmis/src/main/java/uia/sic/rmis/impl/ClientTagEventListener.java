@@ -57,26 +57,19 @@ class ClientTagEventListener implements TagEventListener {
 
     @Override
     public void valueChanged(final WritableTag tag) {
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    ReadonlyTag roTag = new ReadonlyTag(tag.getPath(), tag.getName());
-                    roTag.setUnit(tag.getUnit());
-                    roTag.setValue(tag.getValue());
-                    roTag.setSource(tag.getSource());
-                    roTag.setUpdateTime(tag.getUpdateTime());
-                    roTag.setReadonly(tag.isReadonly());
-                    ClientTagEventListener.this.client.valueChanged(roTag);
-                }
-                catch (Exception ex) {
-                    logger.error(String.format("sic> %s> notify failure. maybe disconnect or broken.", ClientTagEventListener.this.name));
-                    unregisteredSelf();
-                }
-            }
-
-        }).start();
+        try {
+            ReadonlyTag roTag = new ReadonlyTag(tag.getPath(), tag.getName());
+            roTag.setUnit(tag.getUnit());
+            roTag.setValue(tag.getValue());
+            roTag.setSource(tag.getSource());
+            roTag.setUpdateTime(tag.getUpdateTime());
+            roTag.setReadonly(tag.isReadonly());
+            ClientTagEventListener.this.client.valueChanged(roTag);
+        }
+        catch (Exception ex) {
+            logger.error(String.format("sic> %s> notify failure. maybe disconnect or broken.", ClientTagEventListener.this.name));
+            unregisteredSelf();
+        }
     }
 
     private void unregisteredSelf() {
@@ -85,7 +78,7 @@ class ClientTagEventListener implements TagEventListener {
             this.server.unregister(this.name);
         }
         catch (Exception ex) {
-            ex.printStackTrace();
+
         }
     }
 }

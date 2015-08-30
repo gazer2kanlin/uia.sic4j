@@ -8,9 +8,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Writable tag.
- * 
+ *
  * @author Kyle
- * 
+ *
  */
 public class WritableTag implements Tag {
 
@@ -42,7 +42,7 @@ public class WritableTag implements Tag {
 
     /**
      * Constructor.
-     * 
+     *
      * @param path The path.
      * @param name The tag name.
      * @param unit The unit of value.
@@ -53,7 +53,7 @@ public class WritableTag implements Tag {
 
     /**
      * Constructor.
-     * 
+     *
      * @param path The path.
      * @param name The tag name.
      * @param unit The unit of value.
@@ -66,7 +66,7 @@ public class WritableTag implements Tag {
 
     /**
      * Constructor.
-     * 
+     *
      * @param path The path.
      * @param name The tag name.
      * @param unit The unit of value.
@@ -88,7 +88,7 @@ public class WritableTag implements Tag {
 
     /**
      * Add event listener.
-     * 
+     *
      * @param listener The event listener.
      */
     public void addEventListener(TagEventListener listener) {
@@ -97,7 +97,7 @@ public class WritableTag implements Tag {
 
     /**
      * Remove event listener.
-     * 
+     *
      * @param listener The event listener.
      */
     public void removeEventListener(TagEventListener listener) {
@@ -121,14 +121,15 @@ public class WritableTag implements Tag {
 
     /**
      * Compare value.
-     * 
+     *
      * @param value Value compare with.
      * @return Equal or not.
      */
     public boolean valueEquals(Object value) {
         if (value != null && value.equals(this.value)) {
             return true;
-        } else if (value == null && this.value == null) {
+        }
+        else if (value == null && this.value == null) {
             return true;
         }
         return false;
@@ -166,7 +167,7 @@ public class WritableTag implements Tag {
 
     /**
      * Setup tag value.
-     * 
+     *
      * @param value The value.
      */
     public void setValue(Object value) {
@@ -182,8 +183,8 @@ public class WritableTag implements Tag {
     }
 
     /**
-     * Set source object. 
-     * 
+     * Set source object.
+     *
      * @param source source.
      */
     public void setSource(Object source) {
@@ -200,7 +201,6 @@ public class WritableTag implements Tag {
         return this.id + "=" + getValue();
     }
 
-
     @Override
     public boolean equals(Object o) {
         return o != null &&
@@ -215,7 +215,7 @@ public class WritableTag implements Tag {
 
     /**
      * Write value to tag and raise valueChanged event.
-     * 
+     *
      * @param value Value.
      */
     void writeValue(Object value) {
@@ -231,14 +231,7 @@ public class WritableTag implements Tag {
      */
     void raiseValueChanged() {
         for (final TagEventListener listener : this.listeners) {
-            TH_POOL_EXEC.execute(new Runnable() {
-
-                @Override
-                public void run() {
-                    listener.valueChanged(WritableTag.this); // thread
-                }
-
-            });
+            TH_POOL_EXEC.execute(() -> listener.valueChanged(WritableTag.this));
         }
     }
 
@@ -251,7 +244,7 @@ public class WritableTag implements Tag {
     }
 
     /**
-     * 
+     *
      * @param path
      * @return
      */
@@ -264,7 +257,8 @@ public class WritableTag implements Tag {
         if (!result.startsWith("//")) {
             if (!result.startsWith("/")) {
                 result = "//" + result;
-            } else {
+            }
+            else {
                 result = "/" + result;
             }
         }
@@ -273,7 +267,7 @@ public class WritableTag implements Tag {
 
     /**
      * Find path and name.
-     * 
+     *
      * @param pathName The path and name. Well format is {path}${name}. Path format is //{1}/{2}/.../.
      * @return Name is returned. If format is not correct, -1 is returned.
      */
@@ -281,7 +275,8 @@ public class WritableTag implements Tag {
         int idx = id.lastIndexOf("//$");
         if (idx < 0) {
             return null;
-        } else {
+        }
+        else {
             return new String[] {
                     id.substring(0, idx + 1),
                     id.substring(idx + 2)

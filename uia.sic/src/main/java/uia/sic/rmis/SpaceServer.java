@@ -123,4 +123,14 @@ public interface SpaceServer extends Remote {
      */
     public int writeTag(String fullPath, String name, Object value) throws RemoteException;
 
+    /**
+     * Write value into tag.
+     *
+     * @param prePath The pre-path.
+     * @param name Tag name.
+     * @param value Value.
+     * @return 0: no tag or same value. n: success count. -1: internal exception.
+     * @throws RemoteException RMI exception.
+     */
+    public int writeTags(String prePath, String name, Object value) throws RemoteException;
 }

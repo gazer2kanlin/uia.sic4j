@@ -5,9 +5,10 @@ import java.util.Date;
 import uia.sic.Tag;
 
 /**
- * 
+ * Read only tag implementation.
+ *
  * @author Kyle
- * 
+ *
  */
 public class ReadonlyTag implements Tag {
 

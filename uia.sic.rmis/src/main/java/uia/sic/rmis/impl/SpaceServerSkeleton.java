@@ -74,13 +74,8 @@ public class SpaceServerSkeleton extends UnicastRemoteObject implements SpaceSer
             module.start();
         }
         this.started = true;
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                checkClientAlive();
-            }
-
+        new Thread(() -> {
+            checkClientAlive();
         }).start();
     }
 
@@ -143,15 +138,19 @@ public class SpaceServerSkeleton extends UnicastRemoteObject implements SpaceSer
             return false;
         }
 
-        client.alive();
-        this.clientListeners.put(clientName, new ClientTagEventListener(this, clientName, client));
+        synchronized (this.clientListeners) {
+            this.clientListeners.put(clientName, new ClientTagEventListener(this, clientName, client));
+        }
         logger.info(String.format("sic> %s register %s", clientName, client));
         return true;
     }
 
     @Override
     public boolean unregister(String clientName) throws RemoteException {
-        ClientTagEventListener listener = this.clientListeners.remove(clientName);
+        ClientTagEventListener listener = null;
+        synchronized (this.clientListeners) {
+            listener = this.clientListeners.remove(clientName);
+        }
         if (listener == null) {
             return false;
         }
@@ -244,8 +243,26 @@ public class SpaceServerSkeleton extends UnicastRemoteObject implements SpaceSer
             return 1;
         }
         catch (Exception ex) {
-            ex.printStackTrace();
             return -2;
+        }
+    }
+
+    @Override
+    public int writeTags(String prePath, String propName, Object value) throws RemoteException {
+        List<WritableTag> tags = this.space.browse(prePath, propName);
+
+        int i = 0;
+        try {
+            for (WritableTag tag : tags) {
+                if (!tag.valueEquals(value)) {
+                    tag.setValue(value);
+                    i++;
+                }
+            }
+            return i;
+        }
+        catch (Exception ex) {
+            return -1;
         }
     }
 
